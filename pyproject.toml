@@ -17,6 +17,7 @@ dependencies = [
     "requests-ratelimiter>=0.7.0",
     "ta-lib-easy>=1.0.3",
     "pyarrow>=20.0.0",
+    "pandas>=2.2.3",
 ]
 
 [project.scripts]

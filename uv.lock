@@ -14,6 +14,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "curl-cffi" },
+    { name = "pandas" },
     { name = "prefect" },
     { name = "pyarrow" },
     { name = "pyrate-limiter" },
@@ -37,6 +38,7 @@ requires-dist = [
     { name = "curl-cffi", specifier = ">=0.10.0" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.0" },
+    { name = "pandas", specifier = ">=2.2.3" },
     { name = "prefect", specifier = ">=3.4.0" },
     { name = "pyarrow", specifier = ">=20.0.0" },
     { name = "pyrate-limiter", specifier = ">=2.10.0" },
