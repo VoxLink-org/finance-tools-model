@@ -1,4 +1,3 @@
-import logging
 import sqlite3
 from datetime import datetime
 from typing import Literal, Optional
@@ -8,7 +7,7 @@ from prefect import task, flow, get_run_logger
 
 import yfinance_utils
 
-logger = logging.getLogger(__name__)
+logger = get_run_logger()
 
 
 def create_snapshot(df: pd.DataFrame, underlyingPrice: float) -> pd.DataFrame:
