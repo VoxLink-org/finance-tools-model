@@ -11,3 +11,4 @@ wheels/
 *.cache
 data/processed
 *.db
+nohup.out
