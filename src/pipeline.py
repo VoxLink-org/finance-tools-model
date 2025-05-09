@@ -1,14 +1,22 @@
 from datetime import datetime
 from typing import List
+import get_ticker_pool
 from prefect import task, flow, get_run_logger
 from prefect.task_runners import ConcurrentTaskRunner
 
 import yfinance_task 
 @flow(task_runner=ConcurrentTaskRunner())
-def stock_data_pipeline(tickers: List[str]=["AAPL"]):
+def stock_data_pipeline(tickers: List[str]):
     """Main data pipeline that gets, validates and saves options data"""
     logger = get_run_logger()
     
+    if not tickers:
+        tickers = get_ticker_pool.get_most_active_tickers()
+
+    if not tickers or len(tickers) == 0:
+        logger.error("No tickers provided")
+        return
+        
     for ticker in tickers:
         logger.info(f"Processing ticker: {ticker}")
         
@@ -30,5 +38,11 @@ def stock_data_pipeline(tickers: List[str]=["AAPL"]):
         else:
             logger.error(f"Failed to save data for {ticker}")
 
+
+def main():
+    stock_data_pipeline(get_ticker_pool.get_most_active_tickers_from_tradingview()[:5])
+
+
+
 if __name__ == "__main__":
-    stock_data_pipeline(["AAPL"])
+    stock_data_pipeline(["PLTR"])

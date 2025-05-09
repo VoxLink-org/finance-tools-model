@@ -91,6 +91,8 @@ def get_options(
         if len(df) == 0:
             return f"No options found for {ticker_symbol}"
 
+        logger.info(f"Found {len(df)} options for {ticker_symbol}")
+
         # pick up some of the columns
         df = df[["contractSymbol", "strike", "lastPrice", "lastTradeDate", "change", "volume", "openInterest", "impliedVolatility", "expiryDate"]]
         # add new columns, ticker symbol , snapshot date and underlying price
@@ -176,7 +178,9 @@ def validate_options_task(options_df: pd.DataFrame) -> bool:
         logger.error(f"Input type: {type(options_df)}")
         logger.error(f"Input value: {options_df}")
         return False
-        
+    
+    logger.info(options_df)
+
     missing_cols = set(required_columns.keys()) - set(options_df.columns)
     if missing_cols:
         logger.error(f"Missing required columns: {missing_cols}")

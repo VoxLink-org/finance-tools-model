@@ -21,7 +21,8 @@ dependencies = [
 ]
 
 [project.scripts]
-aaw-financehub-pipeline = "pipeline:stock_data_pipeline"
+aaw-financehub-pipeline = "pipeline:main"
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
