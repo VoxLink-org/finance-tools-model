@@ -34,6 +34,10 @@ def stock_data_pipeline(tickers: List[str]):
         
         if save_success:
             logger.info(f"Successfully processed {ticker}")
+            
+            # Clean up old data
+            deleted_count = yfinance_task.clean_up_the_days_before_10days()
+            logger.info(f"Cleaned up {deleted_count} old records for {ticker}")
         else:
             logger.error(f"Failed to save data for {ticker}")
 

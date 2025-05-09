@@ -185,14 +185,16 @@ def validate_options_task(options_df: pd.DataFrame) -> bool:
     if missing_cols:
         logger.error(f"Missing required columns: {missing_cols}")
         return False
-        
-    return True
+            
+
+db_path = "data/options_data.db"
+table_name = "options"
 
 @task(name="save-options-data")
 def save_options_task(
     options_df: pd.DataFrame,
-    db_path: str = "data/options_data.db",
-    table_name: str = "options"
+    db_path: str = db_path,
+    table_name: str = table_name
 ) -> bool:
     """Save options data to SQLite database.
     
@@ -221,6 +223,27 @@ def save_options_task(
         logger.error(f"Failed to save options data: {str(e)}")
         return False
     
+@task(name="clean-up-old-options-data")
+def clean_up_the_days_before_10days() -> int:
+    """Clean up options data older than 10 days.
+    
+    Returns:
+        int: Number of rows deleted
+    """
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM options WHERE snapshotDate < date('now', '-10 days')")
+            row_count = cursor.rowcount
+            conn.commit()
+            logger.info(f"Deleted {row_count} old options records")
+            return row_count
+    except sqlite3.Error as e:
+        logger.error(f"Database error during cleanup: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during cleanup: {e}")
+        raise
 
 if __name__ == "__main__":
     get_options("AAPL")
