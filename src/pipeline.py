@@ -3,6 +3,7 @@ from typing import List
 import get_ticker_pool
 from prefect import task, flow, get_run_logger
 from prefect.task_runners import ConcurrentTaskRunner
+from prefect.artifacts import create_link_artifact
 
 import yfinance_task 
 @flow(task_runner=ConcurrentTaskRunner())
@@ -10,9 +11,7 @@ def stock_data_pipeline(tickers: List[str]):
     """Main data pipeline that gets, validates and saves options data"""
     logger = get_run_logger()
     
-    if not tickers:
-        tickers = get_ticker_pool.get_most_active_tickers()
-
+        
     if not tickers or len(tickers) == 0:
         logger.error("No tickers provided")
         return
@@ -38,6 +37,11 @@ def stock_data_pipeline(tickers: List[str]):
         else:
             logger.error(f"Failed to save data for {ticker}")
 
+    create_link_artifact(
+        key="options-data",
+        link="https://prefect.findata-be.uk/link_artifact/options_data.db",
+        description="## Highly variable data",
+    )
 
 def main():
     stock_data_pipeline(get_ticker_pool.get_most_active_tickers_from_tradingview()[:5])

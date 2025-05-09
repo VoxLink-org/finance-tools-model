@@ -1,15 +1,16 @@
-from prefect.server.schemas.schedules import IntervalSchedule
+from datetime import  datetime
+import get_ticker_pool
+from prefect.schedules import Cron
 import datetime
 from pipeline import stock_data_pipeline
 
 if __name__ == "__main__":
-    stock_data_pipeline.deploy(
+    tickers =get_ticker_pool.get_most_active_tickers_from_tradingview()
+    stock_data_pipeline.serve(
         name="stock-data-pipeline-all",
-        schedule=IntervalSchedule(
-            interval=datetime.timedelta(days=1),
-            anchor_date=datetime.datetime.now().replace(hour=17, minute=0, second=0, microsecond=0),
+        schedule=Cron(
+            "0 17 * * 1,2,3,4,5",
             timezone="America/New_York"
         ),
-        tags=["production", "yfinance"],
-        work_pool_name="default-pool"
+        parameters={"tickers": tickers}
     )

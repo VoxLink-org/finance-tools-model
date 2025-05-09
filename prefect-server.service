@@ -1,0 +1,12 @@
+[Unit]
+Description=Prefect Server
+After=network.target
+
+[Service]
+User=%i
+ExecStart=/usr/local/bin/prefect server start
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
