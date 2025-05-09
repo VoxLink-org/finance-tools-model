@@ -7,7 +7,8 @@ from prefect import task, flow, get_run_logger
 
 import yfinance_utils
 
-logger = get_run_logger()
+db_path = "data/options_data.db"
+table_name = "options"
 
 
 def create_snapshot(df: pd.DataFrame, underlyingPrice: float) -> pd.DataFrame:
@@ -75,6 +76,9 @@ def get_options(
 ) -> pd.DataFrame:
     """Get options with bucketed selection. Dates: YYYY-MM-DD. Type: C=calls, P=puts."""
     underlyingPrice = yfinance_utils.get_current_price(ticker_symbol)
+    
+    logger = get_run_logger()
+
     logger.info(f"Current stock price for {ticker_symbol}: {underlyingPrice}")
 
 
@@ -171,6 +175,8 @@ def validate_options_task(options_df: pd.DataFrame) -> bool:
         "impliedVolatility": float,
         "expiryDate": datetime,
     }
+
+    logger.info(options_df)
     
     if not isinstance(options_df, pd.DataFrame):
         logger.error("Input is not a pandas DataFrame")
@@ -178,16 +184,15 @@ def validate_options_task(options_df: pd.DataFrame) -> bool:
         logger.error(f"Input value: {options_df}")
         return False
     
-    logger.info(options_df)
+    
 
     missing_cols = set(required_columns.keys()) - set(options_df.columns)
     if missing_cols:
         logger.error(f"Missing required columns: {missing_cols}")
         return False
-            
 
-db_path = "data/options_data.db"
-table_name = "options"
+    return True            
+
 
 @task(name="save-options-data")
 def save_options_task(
@@ -229,6 +234,7 @@ def clean_up_the_days_before_10days() -> int:
     Returns:
         int: Number of rows deleted
     """
+    logger = get_run_logger()
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
@@ -239,10 +245,10 @@ def clean_up_the_days_before_10days() -> int:
             return row_count
     except sqlite3.Error as e:
         logger.error(f"Database error during cleanup: {e}")
-        raise
+        
     except Exception as e:
         logger.error(f"Unexpected error during cleanup: {e}")
-        raise
+        
 
 if __name__ == "__main__":
     get_options("AAPL")
