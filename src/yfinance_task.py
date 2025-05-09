@@ -191,7 +191,7 @@ def validate_options_task(options_df: pd.DataFrame) -> bool:
 @task(name="save-options-data")
 def save_options_task(
     options_df: pd.DataFrame,
-    db_path: str = "options_data.db",
+    db_path: str = "data/options_data.db",
     table_name: str = "options"
 ) -> bool:
     """Save options data to SQLite database.
