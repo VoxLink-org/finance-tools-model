@@ -40,8 +40,18 @@ def get_most_active_tickers_from_tradingview(prefix=False) -> List[str]:
         logger.error(f"Error getting most active tickers: {e}")
         return []
     
+def get_supplied_tickers():
+    ticker = []
+    with open("./src/tickers.txt", "r") as f:
+        for line in f:
+            ticker.append(line.strip().upper())
+    return ticker
 
+def get_ticker_pool():
+    t1 = get_supplied_tickers()
+    t2 = get_most_active_tickers_from_tradingview()
+    return list(set(t1 + t2))
 
 if __name__ == "__main__":
-    tickers = get_most_active_tickers_from_tradingview()
+    tickers = get_ticker_pool()
     print(tickers)

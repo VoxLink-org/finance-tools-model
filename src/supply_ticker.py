@@ -1,1 +1,0 @@
-extra_tickers = ['tqqq','spy','sso','qld','qqq']
